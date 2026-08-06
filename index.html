@@ -33,7 +33,7 @@
   </div>
   <div class="hero-product">
     <div class="product-badge">MacBook Air 13”</div>
-    <img src="macbook-top.jpg" alt="MacBook Air color azul medianoche">
+    <img src="macbook-top.jpg" alt="MacBook Air color azul medianoche" class="zoomable" onclick="openLightbox(this.src)">
     <h2>Chip M5 · 16 GB · 512 GB</h2>
     <p>Color Azul Medianoche · Totalmente nueva</p>
   </div>
@@ -75,7 +75,7 @@
   <article class="card main-prize">
     <span class="eyebrow">PREMIO PRINCIPAL</span><h2>MacBook Air 13”</h2>
     <p><b>Chip M5 · 16 GB · 512 GB · Azul Medianoche</b></p>
-    <div class="gallery"><img src="macbook-top.jpg" alt=""><img src="macbook-box-angle.jpg" alt=""><img src="macbook-box.jpg" alt=""><img src="especificaciones.PNG" alt=""></div>
+    <div class="gallery"><img src="macbook-top.jpg" alt="" class="zoomable" onclick="openLightbox(this.src)"><img src="macbook-box-angle.jpg" alt="" class="zoomable" onclick="openLightbox(this.src)"><img src="macbook-box.jpg" alt="" class="zoomable" onclick="openLightbox(this.src)"><img src="especificaciones.png" alt="" class="zoomable" onclick="openLightbox(this.src)"></div>
     <span class="new-pill">TOTALMENTE NUEVA</span>
   </article>
   <article class="card bonus-card">
@@ -85,7 +85,7 @@
     <div class="bonus-number"><b id="bonusSold">0</b><span>/300 boletos vendidos</span></div>
     <div class="bonus-prizes">
       <div><b>🥈 2.º LUGAR</b><strong>$2,000 MXN</strong></div>
-      <div><b>🥉 3.er LUGAR</b><img src="mandil.jpg" alt="Mandil de piel"><strong>Mandil de piel</strong></div>
+      <div><b>🥉 3.er LUGAR</b><img src="mandil.jpg" alt="Mandil de piel" class="zoomable" onclick="openLightbox(this.src)"><strong>Mandil de piel</strong></div>
     </div>
     <div id="bonusStatus" class="bonus-status">Faltan 300 boletos para activar el BONUS.</div>
   </article>
@@ -93,7 +93,7 @@
 
 <section class="two-cols" id="metodologia">
   <article class="card"><span class="eyebrow">CÓMO PARTICIPAR</span><h2>Metodología del sorteo</h2>
-    <ol class="steps"><li>Selecciona tus boletos.</li><li>Escribe nombre, WhatsApp y ciudad.</li><li>Realiza tu transferencia con los datos que recibirás por WhatsApp.</li><li>Envía tu comprobante por WhatsApp.</li><li>Confirmamos manualmente tus boletos como pagados.</li><li>El ganador se determina con los <b>últimos 3 dígitos</b> del resultado indicado en la información oficial de la rifa.</li></ol>
+    <ol class="steps"><li>Selecciona tus boletos.</li><li>Escribe nombre, WhatsApp y ciudad.</li><li>Realiza tu transferencia con los datos que recibirás por WhatsApp.</li><li>Envía tu comprobante por WhatsApp.</li><li>Confirmamos manualmente tus boletos como pagados.</li><li>El ganador se determinará con los <b>últimos 3 dígitos</b> del resultado del premio mayor de la Lotería Nacional, y en caso de que se activen los bonus, estos serán con respecto al segundo y tercer lugar de la Lotería Nacional.</li><li>Si el número resultante corresponde a un boleto no vendido, se recorre al siguiente evento de la Lotería Nacional hasta que resulte un ganador.</li></ol>
   </article>
   <article class="card" id="reglas"><span class="eyebrow">INFORMACIÓN</span><h2>Reglas de la rifa</h2>
     <ul class="rules"><li>Válida únicamente en México.</li><li>Cada boleto cuesta $250 MXN.</li><li>Los apartados tienen vigencia de 24 horas.</li><li>El boleto se considera pagado hasta que el administrador confirme el comprobante.</li><li>La fecha del sorteo es el 6 de septiembre de 2026.</li><li>El bonus de 2.º y 3.er lugar se activa al alcanzar 300 boletos pagados.</li></ul>
@@ -116,8 +116,16 @@
     <p class="small">Al continuar, recibirás por WhatsApp la información para realizar la transferencia y enviar tu comprobante.</p>
   </div>
 </div>
+<div id="lightbox" class="lightbox hidden" onclick="closeLightbox()">
+  <span class="lightbox-close">×</span>
+  <img id="lightboxImg" src="" alt="">
+</div>
 <div id="toast" class="toast"></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="config.js"></script>
+<script>
+function openLightbox(src){document.getElementById('lightboxImg').src=src;document.getElementById('lightbox').classList.remove('hidden')}
+function closeLightbox(){document.getElementById('lightbox').classList.add('hidden')}
+</script>
 <script src="app.js"></script>
 </body></html>
