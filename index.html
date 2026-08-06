@@ -11,11 +11,12 @@
 <body>
 <header class="topbar">
   <a class="brand" href="#inicio"><img src="logo.png" alt="Lucky Élite Select"></a>
-  <nav>
+  <nav id="mainNav">
     <a href="#inicio">Inicio</a><a href="#boletos">Boletos</a><a href="#premios">Premios</a>
     <a href="#metodologia">Metodología</a><a href="#reglas">Reglas</a>
   </nav>
   <a class="admin-link" href="admin.html">🔐 Admin</a>
+  <button class="menu-toggle" id="menuToggle" aria-label="Abrir menú">☰</button>
 </header>
 
 <main id="inicio">
@@ -126,6 +127,8 @@
 <script>
 function openLightbox(src){document.getElementById('lightboxImg').src=src;document.getElementById('lightbox').classList.remove('hidden')}
 function closeLightbox(){document.getElementById('lightbox').classList.add('hidden')}
+document.getElementById('menuToggle').addEventListener('click',function(){document.getElementById('mainNav').classList.toggle('open')});
+document.getElementById('mainNav').addEventListener('click',function(e){if(e.target.tagName==='A')document.getElementById('mainNav').classList.remove('open')});
 </script>
 <script src="app.js"></script>
 </body></html>
