@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Lucky Élite Select — La suerte de tu lado</title>
+  <meta name="description" content="Rifa Lucky Élite Select. MacBook Air 13” Chip M5, 16 GB, 512 GB.">
+  <link rel="icon" href="assets/logo.png">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="#inicio"><img src="assets/logo.png" alt="Lucky Élite Select"></a>
+  <nav>
+    <a href="#inicio">Inicio</a><a href="#boletos">Boletos</a><a href="#premios">Premios</a>
+    <a href="#metodologia">Metodología</a><a href="#reglas">Reglas</a>
+  </nav>
+  <a class="admin-link" href="admin.html">🔐 Admin</a>
+</header>
+
+<main id="inicio">
+<section class="hero">
+  <div class="hero-copy">
+    <span class="eyebrow">PREMIO PRINCIPAL</span>
+    <h1>Lucky <em>Élite</em> Select</h1>
+    <p class="tagline">La suerte de tu lado</p>
+    <p class="lead">⭐ Elige tus números y participa por una <strong>MacBook Air totalmente nueva.</strong></p>
+    <div class="specs">
+      <div><small>BOLETO</small><b>$250</b><span>MXN</span></div>
+      <div><small>SORTEO</small><b>6 de septiembre</b><span>2026</span></div>
+      <div><small>BOLETOS</small><b>1,000</b><span>000 — 999</span></div>
+    </div>
+  </div>
+  <div class="hero-product">
+    <div class="product-badge">MacBook Air 13”</div>
+    <img src="assets/macbook-top.jpg" alt="MacBook Air color azul medianoche">
+    <h2>Chip M5 · 16 GB · 512 GB</h2>
+    <p>Color Azul Medianoche · Totalmente nueva</p>
+  </div>
+</section>
+
+<section class="stats">
+  <div><span>SORTEO EN</span><strong id="countdown">Calculando…</strong></div>
+  <div><span>BOLETOS DISPONIBLES</span><strong id="available">1,000</strong><small> de 1,000</small></div>
+  <div><span>VENDIDOS</span><strong id="sold">0</strong><small id="soldPct">(0%)</small></div>
+  <div class="bonus-stat"><span>FALTAN PARA BONUS</span><strong id="bonusRemaining">300</strong><small>para 300 boletos</small></div>
+</section>
+
+<section class="ticket-section" id="boletos">
+  <div class="section-head">
+    <div><span class="eyebrow">PARTICIPA</span><h2>Elige tus boletos</h2></div>
+    <div class="search"><input id="search" inputmode="numeric" maxlength="3" placeholder="Buscar número…"><button id="searchBtn">⌕</button></div>
+  </div>
+  <div class="legend">
+    <span><i class="dot available-dot"></i> Disponible</span><span><i class="dot held-dot"></i> Apartado</span>
+    <span><i class="dot paid-dot"></i> Pagado</span><span>⭐ Ganador</span>
+  </div>
+  <div class="ticket-layout">
+    <div>
+      <div id="tickets" class="tickets"></div>
+      <div id="pagination" class="pagination"></div>
+      <p class="hint">Cada boleto tiene 3 números. Ejemplo: <b>042</b>.</p>
+    </div>
+    <aside class="selection">
+      <h3>Tus boletos seleccionados <span id="selectionCount">(0)</span></h3>
+      <div id="selectedList" class="selected-list"><span class="muted">Aún no seleccionas boletos.</span></div>
+      <div class="total"><span>Total a pagar</span><strong id="total">$0 MXN</strong></div>
+      <button id="reserveBtn" class="whatsapp" disabled>🟢 APARTAR POR WHATSAPP</button>
+      <p class="small">Tus boletos quedarán apartados durante <b>24 horas</b> al completar el formulario.</p>
+    </aside>
+  </div>
+</section>
+
+<section class="info-grid" id="premios">
+  <article class="card main-prize">
+    <span class="eyebrow">PREMIO PRINCIPAL</span><h2>MacBook Air 13”</h2>
+    <p><b>Chip M5 · 16 GB · 512 GB · Azul Medianoche</b></p>
+    <div class="gallery"><img src="assets/macbook-top.jpg" alt=""><img src="assets/macbook-box-angle.jpg" alt=""><img src="assets/macbook-box.jpg" alt=""></div>
+    <span class="new-pill">TOTALMENTE NUEVA</span>
+  </article>
+  <article class="card bonus-card">
+    <span class="eyebrow">BONUS ESPECIAL</span><h2 id="bonusTitle">¡Si llegamos a 300 boletos vendidos!</h2>
+    <p>Se activan premios para 2.º y 3.er lugar.</p>
+    <div class="bonus-progress"><div id="progressBar"></div></div>
+    <div class="bonus-number"><b id="bonusSold">0</b><span>/300 boletos vendidos</span></div>
+    <div class="bonus-prizes">
+      <div><b>🥈 2.º LUGAR</b><strong>$2,000 MXN</strong></div>
+      <div><b>🥉 3.er LUGAR</b><img src="assets/mandil.jpg" alt="Mandil de piel"><strong>Mandil de piel</strong></div>
+    </div>
+    <div id="bonusStatus" class="bonus-status">Faltan 300 boletos para activar el BONUS.</div>
+  </article>
+</section>
+
+<section class="two-cols" id="metodologia">
+  <article class="card"><span class="eyebrow">CÓMO PARTICIPAR</span><h2>Metodología del sorteo</h2>
+    <ol class="steps"><li>Selecciona tus boletos.</li><li>Escribe nombre, WhatsApp y ciudad.</li><li>Realiza tu transferencia con los datos que recibirás por WhatsApp.</li><li>Envía tu comprobante por WhatsApp.</li><li>Confirmamos manualmente tus boletos como pagados.</li><li>El ganador se determina con los <b>últimos 3 dígitos</b> del resultado indicado en la información oficial de la rifa.</li></ol>
+  </article>
+  <article class="card" id="reglas"><span class="eyebrow">INFORMACIÓN</span><h2>Reglas de la rifa</h2>
+    <ul class="rules"><li>Válida únicamente en México.</li><li>Cada boleto cuesta $250 MXN.</li><li>Los apartados tienen vigencia de 24 horas.</li><li>El boleto se considera pagado hasta que el administrador confirme el comprobante.</li><li>La fecha del sorteo es el 6 de septiembre de 2026.</li><li>El bonus de 2.º y 3.er lugar se activa al alcanzar 300 boletos pagados.</li></ul>
+  </article>
+</section>
+
+<section class="winner card" id="resultados"><span class="eyebrow">RESULTADO</span><h2 id="winnerTitle">🏆 Ganador</h2><p id="winnerText">El ganador se publicará aquí después del sorteo.</p></section>
+</main>
+
+<footer><img src="assets/logo.png" alt=""> <span>Lucky Élite Select · La suerte de tu lado</span></footer>
+
+<div id="modal" class="modal hidden">
+  <div class="modal-box"><button class="close" id="closeModal">×</button>
+    <h2>Apartar boletos</h2><p id="modalTickets"></p>
+    <form id="reserveForm"><label>Nombre completo<input required name="name" maxlength="80"></label>
+      <label>WhatsApp<input required name="whatsapp" inputmode="tel" maxlength="20"></label>
+      <label>Ciudad<input required name="city" maxlength="60"></label>
+      <button class="primary" type="submit">Apartar y abrir WhatsApp</button>
+    </form>
+    <p class="small">Al continuar, recibirás por WhatsApp la información para realizar la transferencia y enviar tu comprobante.</p>
+  </div>
+</div>
+<div id="toast" class="toast"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
+<script src="app.js"></script>
+</body></html>

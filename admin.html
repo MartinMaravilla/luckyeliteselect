@@ -1,0 +1,13 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Admin — Lucky Élite Select</title><link rel="stylesheet" href="styles.css"></head><body>
+<header class="topbar"><a class="brand" href="index.html"><img src="assets/logo.png"></a><span style="color:#aaa">Panel de administración</span></header>
+<main style="padding-top:40px">
+<section id="login" class="card" style="max-width:480px;margin:40px auto"><span class="eyebrow">ACCESO PRIVADO</span><h2>Administrador</h2><form id="loginForm"><label>Correo<input required id="email" type="email" style="width:100%;padding:12px;background:#0d0f13;color:#fff;border:1px solid #2a2d34;border-radius:10px"></label><label>Contraseña<input required id="password" type="password" style="width:100%;padding:12px;background:#0d0f13;color:#fff;border:1px solid #2a2d34;border-radius:10px"></label><button class="primary" type="submit">Entrar</button></form><p id="loginMsg" class="small"></p></section>
+<section id="dashboard" class="hidden">
+<div class="stats"><div><span>PAGADOS</span><strong id="aSold">0</strong></div><div><span>APARTADOS</span><strong id="aHeld">0</strong></div><div><span>DISPONIBLES</span><strong id="aAvail">0</strong></div><div class="bonus-stat"><span>BONUS</span><strong id="aBonus">INACTIVO</strong></div></div>
+<div id="alert300" class="card hidden" style="border-color:#80621b;margin-bottom:20px"><h2>🎉 ¡BONUS ACTIVADO!</h2><p>Ya se alcanzaron 300 boletos pagados. 2.º lugar: $2,000 MXN · 3.er lugar: Mandil de piel.</p></div>
+<div class="card"><div class="section-head"><div><span class="eyebrow">BOLETOS</span><h2>Administrar</h2></div><div class="search"><input id="aSearch" maxlength="3" placeholder="Número…"><button onclick="filterAdmin()">⌕</button></div></div>
+<div id="adminTickets" class="tickets"></div><p class="small">Haz clic en un boleto para ver sus datos y cambiar su estado.</p></div>
+<div class="card" style="margin-top:18px"><span class="eyebrow">GANADOR</span><h2>Publicar ganador</h2><form id="winnerForm" style="display:flex;gap:10px;flex-wrap:wrap"><input id="winnerNumber" maxlength="3" placeholder="Ej. 728" style="padding:12px;background:#0d0f13;color:#fff;border:1px solid #2a2d34;border-radius:10px"><button class="primary" style="width:auto" type="submit">Publicar ganador</button></form><p id="winnerMsg" class="small"></p></div>
+<button id="logout" class="admin-link" style="margin:20px 0;background:none">Cerrar sesión</button>
+</section></main><div id="toast" class="toast"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="config.js"></script><script src="admin.js"></script></body></html>
