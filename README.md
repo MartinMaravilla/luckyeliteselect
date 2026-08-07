@@ -43,4 +43,4 @@ El panel Admin muestra un aviso cuando llegan a 300 boletos pagados. Para notifi
 - Nunca pongas una service_role key en `config.js`.
 - Usa solo la clave pública de Supabase.
 - El admin debe usar una contraseña fuerte.
-- Verifica las reglas legales aplicables a rifas en México antes de publicar/cobrar.
+- Verifica las reglas legales aplicables a rifas en México antes de publicar/cobrar. 
