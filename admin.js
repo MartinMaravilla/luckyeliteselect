@@ -30,20 +30,23 @@ async function showReceipt(buyerId,buyer){
 $("#closeReceipt").onclick=()=>$("#receiptModal").classList.add("hidden");
 $("#receiptWhatsapp").onclick=async()=>{
  const btn=$("#receiptWhatsapp");const originalText=btn.textContent;btn.textContent="Generando imagen…";btn.disabled=true;
+ const num=($("#rWhats").textContent||"").replace(/\D/g,"");
+ const waWindow=window.open("about:blank","_blank"); // abrir de inmediato para evitar bloqueo de pop-ups
  try{
   const canvas=await html2canvas($("#receiptContent"),{backgroundColor:"#0d0f13",scale:2});
   const blob=await new Promise(res=>canvas.toBlob(res,"image/png"));
-  const num=($("#rWhats").textContent||"").replace(/\D/g,"");
   const file=new File([blob],"comprobante.png",{type:"image/png"});
   if(navigator.canShare&&navigator.canShare({files:[file]})){
+   if(waWindow)waWindow.close();
    await navigator.share({files:[file],title:"Comprobante de pago",text:window.__lastReceiptText||""});
   } else {
    const url=URL.createObjectURL(blob);
    const a=document.createElement("a");a.href=url;a.download="comprobante.png";document.body.appendChild(a);a.click();a.remove();
-   toast("Se descargó la imagen. Adjúntala manualmente en el chat de WhatsApp que se abrirá.");
-   window.open(`https://wa.me/${num?("52"+num):""}`,"_blank");
+   toast("Se descargó la imagen. Adjúntala manualmente en la ventana de WhatsApp que se abrió.");
+   const waUrl=`https://wa.me/${num?("52"+num):""}`;
+   if(waWindow) waWindow.location.href=waUrl; else window.open(waUrl,"_blank");
   }
- }catch(err){ if(err.name!=="AbortError") toast("No se pudo generar la imagen: "+err.message); }
+ }catch(err){ if(waWindow)waWindow.close(); if(err.name!=="AbortError") toast("No se pudo generar la imagen: "+err.message); }
  btn.textContent=originalText;btn.disabled=false;
 };
 $("#winnerForm").onsubmit=async e=>{e.preventDefault();let n=$("#winnerNumber").value.padStart(3,"0");if(!/^\d{3}$/.test(n))return toast("Escribe un número de 3 dígitos.");const {error}=await client.from("raffles").update({winner_number:n}).eq("id",window.RAFFLE_ID);if(error)toast(error.message);else $("#winnerMsg").textContent=`Ganador publicado: ${n}`};
