@@ -1,5 +1,5 @@
 <!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Admin — Lucky Élite Select</title><link rel="stylesheet" href="styles.css"></head><body>
-<header class="topbar"><a class="brand" href="index.html"><img src="assets/logo.png"></a><span style="color:#aaa">Panel de administración</span></header>
+<header class="topbar"><a class="brand" href="index.html"><img src="logo.png"></a><span style="color:#aaa">Panel de administración</span></header>
 <main style="padding-top:40px">
 <section id="login" class="card" style="max-width:480px;margin:40px auto"><span class="eyebrow">ACCESO PRIVADO</span><h2>Administrador</h2><form id="loginForm"><label>Correo<input required id="email" type="email" style="width:100%;padding:12px;background:#0d0f13;color:#fff;border:1px solid #2a2d34;border-radius:10px"></label><label>Contraseña<input required id="password" type="password" style="width:100%;padding:12px;background:#0d0f13;color:#fff;border:1px solid #2a2d34;border-radius:10px"></label><button class="primary" type="submit">Entrar</button></form><p id="loginMsg" class="small"></p></section>
 <section id="dashboard" class="hidden">
@@ -9,5 +9,28 @@
 <div id="adminTickets" class="tickets"></div><p class="small">Haz clic en un boleto para ver sus datos y cambiar su estado.</p></div>
 <div class="card" style="margin-top:18px"><span class="eyebrow">GANADOR</span><h2>Publicar ganador</h2><form id="winnerForm" style="display:flex;gap:10px;flex-wrap:wrap"><input id="winnerNumber" maxlength="3" placeholder="Ej. 728" style="padding:12px;background:#0d0f13;color:#fff;border:1px solid #2a2d34;border-radius:10px"><button class="primary" style="width:auto" type="submit">Publicar ganador</button></form><p id="winnerMsg" class="small"></p></div>
 <button id="logout" class="admin-link" style="margin:20px 0;background:none">Cerrar sesión</button>
-</section></main><div id="toast" class="toast"></div>
+</section>
+<div id="receiptModal" class="modal hidden">
+  <div class="modal-box receipt-box">
+    <button class="close" id="closeReceipt">×</button>
+    <div id="receiptContent" class="receipt">
+      <div class="receipt-head"><img src="logo.png" alt=""><span class="receipt-status">✅ PAGADO</span></div>
+      <h2>Comprobante de pago confirmado</h2>
+      <p class="receipt-folio" id="rFolio"></p>
+      <div class="receipt-row"><span>Rifa</span><b>Lucky Élite Select</b></div>
+      <div class="receipt-row"><span>Premio principal</span><b>MacBook Air 13" Chip M5, 512 GB</b></div>
+      <div class="receipt-row"><span>Participante</span><b id="rName"></b></div>
+      <div class="receipt-row"><span>WhatsApp</span><b id="rWhats"></b></div>
+      <div class="receipt-row"><span>Ciudad</span><b id="rCity"></b></div>
+      <div class="receipt-row"><span>Boletos</span><b id="rNums"></b></div>
+      <div class="receipt-row"><span>Fecha de confirmación</span><b id="rDate"></b></div>
+      <div class="receipt-row"><span>Fecha del sorteo</span><b>6 de septiembre 2026</b></div>
+      <div class="receipt-row total-row"><span>Total pagado</span><b id="rTotal"></b></div>
+      <p class="small">Este comprobante confirma que el pago fue <b>recibido y verificado</b>. Los boletos quedan oficialmente registrados para el sorteo.</p>
+    </div>
+    <button class="primary" id="downloadReceipt">🖨️ Descargar / Imprimir comprobante</button>
+    <button class="whatsapp" id="receiptWhatsapp">🟢 Enviar por WhatsApp</button>
+  </div>
+</div>
+</main><div id="toast" class="toast"></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="config.js"></script><script src="admin.js"></script></body></html>
