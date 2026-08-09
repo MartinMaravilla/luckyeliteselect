@@ -1,6 +1,8 @@
 const sbReady = window.SUPABASE_URL && !window.SUPABASE_URL.includes("PEGA_AQUI") && window.SUPABASE_ANON_KEY && !window.SUPABASE_ANON_KEY.includes("PEGA_AQUI");
 const supabaseClient = sbReady ? supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY) : null;
 const PRICE=250, TOTAL=1000, BONUS=300, DRAW=new Date("2026-09-06T20:00:00-06:00");
+function calcTotal(n){const groups=Math.floor(n/6), rem=n%6; return (groups*4+rem)*PRICE}
+function promoInfo(n){const groups=Math.floor(n/6); return {applies:groups>0, free:groups*2, savings:groups*2*PRICE}}
 let ticketRows=[], selected=new Set(), page=1, pageSize=100;
 
 const $=s=>document.querySelector(s);
@@ -34,24 +36,46 @@ function render(){
  $("#pagination").innerHTML=Array.from({length:Math.min(pages,10)},(_,i)=>`<button class="${i+1===page?"active":""}" data-p="${i+1}">${i+1}</button>`).join("");
  $("#pagination").querySelectorAll("button").forEach(b=>b.onclick=()=>{page=+b.dataset.p;render()});
  $("#selectedList").innerHTML=selected.size?Array.from(selected).sort().map(n=>`<span class="selected">${n}<button onclick="removeSelected('${n}')">×</button></span>`).join(""):'<span class="muted">Aún no seleccionas boletos.</span>';
- $("#selectionCount").textContent=`(${selected.size})`;$("#total").textContent=formatMXN(selected.size*PRICE);$("#reserveBtn").disabled=!selected.size;
+ $("#selectionCount").textContent=`(${selected.size})`;$("#total").textContent=formatMXN(calcTotal(selected.size));$("#reserveBtn").disabled=!selected.size;
+ const promo=promoInfo(selected.size);
+ if(promo.applies){$("#promoNote").textContent=`🎉 Promo 6x4 aplicada: ${promo.free} boleto(s) gratis · Ahorras ${formatMXN(promo.savings)}`;$("#promoNote").classList.remove("hidden")}else{$("#promoNote").classList.add("hidden")}
 }
 window.removeSelected=n=>{selected.delete(n);render()};
 function toggle(n){if(selected.has(n))selected.delete(n);else if(selected.size<50)selected.add(n);else toast("Puedes seleccionar hasta 50 boletos por operación.");render()}
 $("#searchBtn").onclick=()=>{page=1;render()};$("#search").oninput=()=>{page=1;render()};$("#closeModal").onclick=()=>$("#modal").classList.add("hidden");
-$("#reserveBtn").onclick=()=>{if(!selected.size)return;$("#modalTickets").textContent=`Boletos: ${Array.from(selected).sort().join(", ")} · Total: ${formatMXN(selected.size*PRICE)}`;$("#modal").classList.remove("hidden")};
+$("#reserveBtn").onclick=()=>{if(!selected.size)return;$("#modalTickets").textContent=`Boletos: ${Array.from(selected).sort().join(", ")} · Total: ${formatMXN(calcTotal(selected.size))}`;$("#modal").classList.remove("hidden")};
 
 $("#reserveForm").onsubmit=async e=>{
  e.preventDefault();const fd=new FormData(e.target), name=fd.get("name").trim(), whatsapp=fd.get("whatsapp").trim(), city=fd.get("city").trim(), nums=Array.from(selected).sort();
  if(!sbReady){ // demo preview
-   const text=`Hola, soy ${name}. Quiero participar en Lucky Élite Select. Mis boletos son: ${nums.join(", ")}. Total: ${formatMXN(nums.length*PRICE)}. Ciudad: ${city}.`;
-   window.open(`https://wa.me/527225011229?text=${encodeURIComponent(text)}`,"_blank");toast("Modo demostración: conecta Supabase para bloquear boletos de verdad.");return;
+   const text=`Hola, soy ${name}. Quiero participar en Lucky Élite Select. Mis boletos son: ${nums.join(", ")}. Total: ${formatMXN(calcTotal(nums.length))}. Ciudad: ${city}.`;
+   window.open(`https://wa.me/527225011229?text=${encodeURIComponent(text)}`,"_blank");toast("Modo demostración: conecta Supabase para bloquear boletos de verdad.");
+   selected.clear();$("#modal").classList.add("hidden");e.target.reset();render();
+   return;
  }
  const {data,error}=await supabaseClient.rpc("reserve_tickets",{p_raffle_id:window.RAFFLE_ID,p_numbers:nums,p_name:name,p_whatsapp:whatsapp,p_city:city});
  if(error){toast(error.message);return}
- const text=`Hola, soy ${name}. Quiero participar en Lucky Élite Select. Mis boletos son: ${nums.join(", ")}. Total: ${formatMXN(nums.length*PRICE)}. Ciudad: ${city}.`;
+ const text=`Hola, soy ${name}. Quiero participar en Lucky Élite Select. Mis boletos son: ${nums.join(", ")}. Total: ${formatMXN(calcTotal(nums.length))}. Ciudad: ${city}.`;
  window.open(`https://wa.me/527225011229?text=${encodeURIComponent(text)}`,"_blank");
  selected.clear();$("#modal").classList.add("hidden");e.target.reset();toast("Boletos apartados por 24 horas. Continúa por WhatsApp.");
  await loadTickets();
 };
+
+function showReceipt(name,whatsapp,city,nums){
+ const folio="LES-"+Date.now().toString().slice(-8);
+ const now=new Date();
+ $("#rFolio").textContent="Folio: "+folio;
+ $("#rName").textContent=name;
+ $("#rWhats").textContent=whatsapp;
+ $("#rCity").textContent=city;
+ $("#rNums").textContent=nums.join(", ");
+ $("#rDate").textContent=now.toLocaleString("es-MX",{dateStyle:"long",timeStyle:"short"});
+ $("#rTotal").textContent=formatMXN(calcTotal(nums.length));
+ $("#receiptModal").classList.remove("hidden");
+ window.__lastReceiptText=`Hola, soy ${name}. Ya aparté mis boletos ${nums.join(", ")} de Lucky Élite Select. Folio: ${folio}. Total: ${formatMXN(calcTotal(nums.length))}.`;
+}
+$("#closeReceipt").onclick=()=>$("#receiptModal").classList.add("hidden");
+$("#downloadReceipt").onclick=()=>window.print();
+$("#receiptWhatsapp").onclick=()=>window.open(`https://wa.me/527225011229?text=${encodeURIComponent(window.__lastReceiptText||"")}`,"_blank");
+
 loadTickets();
