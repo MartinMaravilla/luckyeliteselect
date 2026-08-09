@@ -61,21 +61,29 @@ $("#reserveForm").onsubmit=async e=>{
  await loadTickets();
 };
 
-function showReceipt(name,whatsapp,city,nums){
- const folio="LES-"+Date.now().toString().slice(-8);
- const now=new Date();
- $("#rFolio").textContent="Folio: "+folio;
- $("#rName").textContent=name;
- $("#rWhats").textContent=whatsapp;
- $("#rCity").textContent=city;
- $("#rNums").textContent=nums.join(", ");
- $("#rDate").textContent=now.toLocaleString("es-MX",{dateStyle:"long",timeStyle:"short"});
- $("#rTotal").textContent=formatMXN(calcTotal(nums.length));
- $("#receiptModal").classList.remove("hidden");
- window.__lastReceiptText=`Hola, soy ${name}. Ya aparté mis boletos ${nums.join(", ")} de Lucky Élite Select. Folio: ${folio}. Total: ${formatMXN(calcTotal(nums.length))}.`;
-}
-$("#closeReceipt").onclick=()=>$("#receiptModal").classList.add("hidden");
-$("#downloadReceipt").onclick=()=>window.print();
-$("#receiptWhatsapp").onclick=()=>window.open(`https://wa.me/527225011229?text=${encodeURIComponent(window.__lastReceiptText||"")}`,"_blank");
-
 loadTickets();
+
+let luckyPicked=[];
+function openLucky(){$("#luckyStep1").classList.remove("hidden");$("#luckyStep2").classList.add("hidden");$("#luckyModal").classList.remove("hidden")}
+$("#luckyBtn").onclick=openLucky;
+$("#closeLucky").onclick=()=>$("#luckyModal").classList.add("hidden");
+$("#luckyCancel").onclick=()=>$("#luckyModal").classList.add("hidden");
+function spinLucky(){
+ const qty=Math.max(1,Math.min(50,parseInt($("#luckyQty").value)||6));
+ const available=ticketRows.filter(t=>t.status==="available").map(t=>t.number);
+ if(available.length<qty){toast("No hay suficientes boletos disponibles.");return}
+ const pool=[...available];
+ luckyPicked=[];
+ for(let i=0;i<qty;i++){const idx=Math.floor(Math.random()*pool.length);luckyPicked.push(pool.splice(idx,1)[0])}
+ luckyPicked.sort();
+ $("#luckyResult").innerHTML=luckyPicked.map(n=>`<span class="selected">${n}</span>`).join("");
+ $("#luckyStep1").classList.add("hidden");$("#luckyStep2").classList.remove("hidden");
+}
+$("#luckySpin").onclick=spinLucky;
+$("#luckyRespin").onclick=spinLucky;
+$("#luckyReserve").onclick=()=>{
+ luckyPicked.forEach(n=>selected.add(n));
+ render();
+ $("#luckyModal").classList.add("hidden");
+ $("#reserveBtn").click();
+};
