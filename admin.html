@@ -11,6 +11,15 @@
 <div class="card" style="margin-top:18px"><span class="eyebrow">GANADOR</span><h2>Publicar ganador</h2><form id="winnerForm" style="display:flex;gap:10px;flex-wrap:wrap"><input id="winnerNumber" maxlength="3" placeholder="Ej. 728" style="padding:12px;background:#0d0f13;color:#fff;border:1px solid #2a2d34;border-radius:10px"><button class="primary" style="width:auto" type="submit">Publicar ganador</button></form><p id="winnerMsg" class="small"></p></div>
 <button id="logout" class="admin-link" style="margin:20px 0;background:none">Cerrar sesión</button>
 </section>
+<div id="ticketModal" class="modal hidden">
+  <div class="modal-box">
+    <button class="close" id="closeTicketModal">×</button>
+    <h2 id="tmTitle">Boleto</h2>
+    <p class="small" id="tmBuyer"></p>
+    <div id="tmNums" class="selected-list" style="margin:10px 0"></div>
+    <div id="tmActions"></div>
+  </div>
+</div>
 <div id="receiptModal" class="modal hidden">
   <div class="modal-box receipt-box">
     <button class="close" id="closeReceipt">×</button>
