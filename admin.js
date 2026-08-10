@@ -8,8 +8,14 @@ $("#loginForm").onsubmit=async e=>{e.preventDefault();if(!client)return;const {e
 async function show(){$("#login").classList.add("hidden");$("#dashboard").classList.remove("hidden");await loadAdmin()}
 async function loadAdmin(){const {data,error}=await client.from("tickets").select("number,status,reserved_until,buyer_id,buyers(name,whatsapp,city)").eq("raffle_id",window.RAFFLE_ID).order("number");if(error){toast(error.message);return}rows=data;renderAdmin();stats()}
 function stats(){let sold=rows.filter(x=>x.status==="paid").length,held=rows.filter(x=>x.status==="reserved"&&x.reserved_until&&new Date(x.reserved_until)>new Date()).length;$("#aSold").textContent=sold;$("#aHeld").textContent=held;$("#aAvail").textContent=1000-sold-held;$("#aBonus").textContent=sold>=300?"ACTIVADO":"INACTIVO";$("#alert300").classList.toggle("hidden",sold<300)}
-function renderAdmin(){const q=$("#aSearch").value.trim();let list=rows.filter(x=>!q||x.number===q);$("#adminTickets").innerHTML=list.slice(0,300).map(t=>`<button class="ticket ${t.status}" data-n="${t.number}">${t.number}</button>`).join("");$("#adminTickets").querySelectorAll("button").forEach(b=>b.onclick=()=>ticketDetail(b.dataset.n))}
+let statusFilter=null;
+function renderAdmin(){const q=$("#aSearch").value.trim();let list=rows.filter(x=>!q||x.number===q);if(statusFilter)list=list.filter(x=>x.status===statusFilter);$("#adminTickets").innerHTML=list.slice(0,300).map(t=>`<button class="ticket ${t.status}" data-n="${t.number}">${t.number}</button>`).join("");$("#adminTickets").querySelectorAll("button").forEach(b=>b.onclick=()=>ticketDetail(b.dataset.n))}
 window.filterAdmin=()=>renderAdmin();$("#aSearch").oninput=()=>renderAdmin();
+function setStatusFilter(status,label){statusFilter=status;$("#statusFilterLabel").textContent=label;$("#statusFilterNote").classList.remove("hidden");renderAdmin()}
+$("#filterPaid").onclick=()=>setStatusFilter("paid","Pagados");
+$("#filterHeld").onclick=()=>setStatusFilter("reserved","Apartados");
+$("#filterAvail").onclick=()=>setStatusFilter("available","Disponibles");
+$("#clearStatusFilter").onclick=e=>{e.preventDefault();statusFilter=null;$("#statusFilterNote").classList.add("hidden");renderAdmin()};
 async function ticketDetail(n){const t=rows.find(x=>x.number===n);let who=t.buyers?`${t.buyers.name} · ${t.buyers.whatsapp} · ${t.buyers.city}`:"Sin comprador";const next=t.status==="reserved"?"paid":t.status==="paid"?"available":"reserved";if(!confirm(`Boleto ${n}\\nEstado: ${t.status}\\n${who}\\n\\nAceptar = cambiar a ${next}`))return;const {error}=await client.from("tickets").update({status:next,reserved_until:next==="reserved"?new Date(Date.now()+86400000).toISOString():null}).eq("raffle_id",window.RAFFLE_ID).eq("number",n);if(error){toast(error.message);return}toast("Estado actualizado");if(next==="paid"&&t.buyers){showReceipt(t.buyer_id,t.buyers)}await loadAdmin()}
 
 async function showReceipt(buyerId,buyer){
