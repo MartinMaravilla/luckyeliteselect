@@ -34,7 +34,7 @@ create table if not exists public.tickets (
 );
 
 insert into public.raffles(id,name,tagline,prize,price,total_tickets,draw_at,bonus_threshold)
-values('00000000-0000-0000-0000-000000000001','Lucky Élite Select','La suerte de tu lado','MacBook Air 13” Chip M5 · 16 GB · 512 GB · Azul Medianoche',250,1000,'2026-09-06 20:00:00-06',300)
+values('00000000-0000-0000-0000-000000000001','Lucky Élite Select','La suerte de tu lado','MacBook Air 13” Chip M5 · 16 GB · 512 GB · Azul Medianoche',250,1000,'2026-09-20 20:00:00-06',300)
 on conflict(id) do update set name=excluded.name,tagline=excluded.tagline,prize=excluded.prize,price=excluded.price,total_tickets=excluded.total_tickets,draw_at=excluded.draw_at,bonus_threshold=excluded.bonus_threshold;
 
 insert into public.tickets(raffle_id,number)
