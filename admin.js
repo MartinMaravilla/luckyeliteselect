@@ -141,6 +141,9 @@ async function generateReceiptImage(){
 }
 async function sendReceiptWhatsapp(){
  if(!receiptBlob){toast("La imagen aún no está lista.");return}
+ // Descarga siempre la imagen primero, para que quede lista en tu carpeta de Descargas y puedas anexarla
+ const dlUrl=URL.createObjectURL(receiptBlob);
+ const dlLink=document.createElement("a");dlLink.href=dlUrl;dlLink.download="comprobante.png";document.body.appendChild(dlLink);dlLink.click();dlLink.remove();
  const file=new File([receiptBlob],"comprobante.png",{type:"image/png"});
  // 1) Intento directo: compartir la imagen ya adjunta (funciona en celulares y algunos navegadores de escritorio)
  if(navigator.canShare&&navigator.canShare({files:[file]})){
@@ -149,10 +152,8 @@ async function sendReceiptWhatsapp(){
    return;
   }catch(err){ if(err.name==="AbortError")return; /* si falla, sigue al respaldo de abajo */ }
  }
- // 2) Respaldo (navegadores de escritorio sin soporte para compartir archivos): descarga la imagen y abre el chat para adjuntarla a mano
- const url=URL.createObjectURL(receiptBlob);
- const a=document.createElement("a");a.href=url;a.download="comprobante.png";document.body.appendChild(a);a.click();a.remove();
- alert("Tu navegador no permite adjuntar la imagen automáticamente.\n\nSe descargó el comprobante (revisa tu carpeta de Descargas).\n\nAl darle Aceptar se abrirá el chat de WhatsApp: usa el clip 📎 y adjunta la imagen que se acaba de descargar.");
+ // 2) Respaldo (navegadores de escritorio sin soporte para compartir archivos): abre el chat para adjuntar a mano la imagen ya descargada
+ alert("Se descargó el comprobante (revisa tu carpeta de Descargas).\n\nAl darle Aceptar se abrirá el chat de WhatsApp: usa el clip 📎 y adjunta la imagen que se acaba de descargar.");
  window.open(`https://wa.me/${receiptPhone?("52"+receiptPhone):""}?text=${encodeURIComponent(window.__lastReceiptText||"")}`,"_blank");
 }
 $("#closeReceipt").addEventListener("click",()=>$("#receiptModal").classList.add("hidden"));
