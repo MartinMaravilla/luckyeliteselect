@@ -1,6 +1,6 @@
 const sbReady = window.SUPABASE_URL && !window.SUPABASE_URL.includes("PEGA_AQUI") && window.SUPABASE_ANON_KEY && !window.SUPABASE_ANON_KEY.includes("PEGA_AQUI");
 const supabaseClient = sbReady ? supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY) : null;
-const PRICE=250, TOTAL=1000, BONUS=300, DRAW=new Date("2026-09-06T20:00:00-06:00");
+const PRICE=250, TOTAL=1000, BONUS=300, DRAW=new Date("2026-09-20T20:00:00-06:00");
 function calcTotal(n){const groups=Math.floor(n/6), rem=n%6; return (groups*4+rem)*PRICE}
 function promoInfo(n){const groups=Math.floor(n/6); return {applies:groups>0, free:groups*2, savings:groups*2*PRICE}}
 let ticketRows=[], selected=new Set(), page=1, pageSize=100;
