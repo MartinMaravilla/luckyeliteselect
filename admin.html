@@ -1,45 +1,163 @@
-<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Admin — Lucky Élite Select</title><link rel="stylesheet" href="styles.css"></head><body>
-<header class="topbar"><a class="brand" href="index.html"><img src="logo.png"></a><span style="color:#aaa">Panel de administración</span></header>
-<main style="padding-top:40px">
-<section id="login" class="card" style="max-width:480px;margin:40px auto"><span class="eyebrow">ACCESO PRIVADO</span><h2>Administrador</h2><form id="loginForm"><label>Correo<input required id="email" type="email" style="width:100%;padding:12px;background:#0d0f13;color:#fff;border:1px solid #2a2d34;border-radius:10px"></label><label>Contraseña<input required id="password" type="password" style="width:100%;padding:12px;background:#0d0f13;color:#fff;border:1px solid #2a2d34;border-radius:10px"></label><button class="primary" type="submit">Entrar</button></form><p id="loginMsg" class="small"></p></section>
-<section id="dashboard" class="hidden">
-<div class="stats"><div class="stat-filter" id="filterPaid"><span>PAGADOS</span><strong id="aSold">0</strong></div><div class="stat-filter" id="filterHeld"><span>APARTADOS</span><strong id="aHeld">0</strong></div><div class="stat-filter" id="filterAvail"><span>DISPONIBLES</span><strong id="aAvail">0</strong></div><div class="bonus-stat"><span>BONUS</span><strong id="aBonus">INACTIVO</strong></div></div>
-<p id="statusFilterNote" class="small hidden">Mostrando solo: <b id="statusFilterLabel"></b> · <a href="#" id="clearStatusFilter">ver todos</a></p>
-<div id="alert300" class="card hidden" style="border-color:#80621b;margin-bottom:20px"><h2>🎉 ¡BONUS ACTIVADO!</h2><p>Ya se alcanzaron 300 boletos pagados. 2.º lugar: $2,000 MXN · 3.er lugar: Mandil de piel.</p></div>
-<div class="card"><div class="section-head"><div><span class="eyebrow">BOLETOS</span><h2>Administrar</h2></div><div class="search"><input id="aSearch" maxlength="3" placeholder="Número…"><button onclick="filterAdmin()">⌕</button></div></div>
-<div id="adminTickets" class="tickets"></div><p class="small">Haz clic en un boleto para ver sus datos y cambiar su estado.</p></div>
-<div class="card" style="margin-top:18px"><span class="eyebrow">GANADOR</span><h2>Publicar ganador</h2><form id="winnerForm" style="display:flex;gap:10px;flex-wrap:wrap"><input id="winnerNumber" maxlength="3" placeholder="Ej. 728" style="padding:12px;background:#0d0f13;color:#fff;border:1px solid #2a2d34;border-radius:10px"><button class="primary" style="width:auto" type="submit">Publicar ganador</button></form><p id="winnerMsg" class="small"></p></div>
-<button id="logout" class="admin-link" style="margin:20px 0;background:none">Cerrar sesión</button>
-</section>
-<div id="ticketModal" class="modal hidden">
-  <div class="modal-box">
-    <button class="close" id="closeTicketModal">×</button>
-    <h2 id="tmTitle">Boleto</h2>
-    <p class="small" id="tmBuyer"></p>
-    <div id="tmNums" class="selected-list" style="margin:10px 0"></div>
-    <div id="tmActions"></div>
-  </div>
-</div>
-<div id="receiptModal" class="modal hidden">
-  <div class="modal-box receipt-box">
-    <button class="close" id="closeReceipt">×</button>
-    <div id="receiptContent" class="receipt">
-      <div class="receipt-head"><img src="logo.png" alt=""><span class="receipt-status">✅ PAGADO</span></div>
-      <h2>Comprobante de pago confirmado</h2>
-      <p class="receipt-folio" id="rFolio"></p>
-      <div class="receipt-row"><span>Rifa</span><b>Lucky Élite Select</b></div>
-      <div class="receipt-row"><span>Premio principal</span><b>MacBook Air 13" Chip M5, 512 GB</b></div>
-      <div class="receipt-row"><span>Participante</span><b id="rName"></b></div>
-      <div class="receipt-row"><span>WhatsApp</span><b id="rWhats"></b></div>
-      <div class="receipt-row"><span>Ciudad</span><b id="rCity"></b></div>
-      <div class="receipt-row"><span>Boletos</span><b id="rNums"></b></div>
-      <div class="receipt-row"><span>Fecha de confirmación</span><b id="rDate"></b></div>
-      <div class="receipt-row"><span>Fecha del sorteo</span><b>20 de septiembre 2026</b></div>
-      <div class="receipt-row total-row"><span>Total pagado</span><b id="rTotal"></b></div>
-      <p class="small">Este comprobante confirma que el pago fue <b>recibido y verificado</b>. Los boletos quedan oficialmente registrados para el sorteo.</p>
-    </div>
-    <button class="whatsapp" id="receiptWhatsapp">📲 Enviar imagen por WhatsApp</button>
-  </div>
-</div>
-</main><div id="toast" class="toast"></div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script><script src="config.js"></script><script src="admin.js"></script></body></html>
+const ready=window.SUPABASE_URL&&!window.SUPABASE_URL.includes("PEGA_AQUI")&&window.SUPABASE_ANON_KEY&&!window.SUPABASE_ANON_KEY.includes("PEGA_AQUI");const client=ready?supabase.createClient(window.SUPABASE_URL,window.SUPABASE_ANON_KEY):null;const $=s=>document.querySelector(s);let rows=[];
+const PRICE=250;
+function calcTotal(n){const groups=Math.floor(n/6),rem=n%6;return (groups*4+rem)*PRICE}
+function formatMXN(n){return new Intl.NumberFormat("es-MX",{style:"currency",currency:"MXN",maximumFractionDigits:0}).format(n)}
+function toast(m){const t=$("#toast");t.textContent=m;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),3000)}
+async function boot(){if(!ready){$("#loginMsg").textContent="Primero configura Supabase en config.js.";return}const {data}=await client.auth.getSession();if(data.session)show();client.auth.onAuthStateChange((event,s)=>{if(s){show()}else if(event==="SIGNED_OUT"){location.reload()}})}
+$("#loginForm").onsubmit=async e=>{e.preventDefault();if(!client)return;const {error}=await client.auth.signInWithPassword({email:$("#email").value,password:$("#password").value});if(error)$("#loginMsg").textContent=error.message}
+async function show(){$("#login").classList.add("hidden");$("#dashboard").classList.remove("hidden");await loadAdmin()}
+
+async function loadAdmin(){
+ await client.from("tickets").update({status:"available",buyer_id:null,reserved_until:null}).eq("raffle_id",window.RAFFLE_ID).eq("status","reserved").lt("reserved_until",new Date().toISOString());
+ const {data,error}=await client.from("tickets").select("number,status,reserved_until,buyer_id,buyers(name,whatsapp,city)").eq("raffle_id",window.RAFFLE_ID).order("number");
+ if(error){toast(error.message);return}
+ rows=data;renderAdmin();stats();
+}
+
+function stats(){
+ let sold=rows.filter(x=>x.status==="paid").length,held=rows.filter(x=>x.status==="reserved").length;
+ $("#aSold").textContent=sold;$("#aHeld").textContent=held;$("#aAvail").textContent=1000-sold-held;
+ $("#aBonus").textContent=sold>=300?"ACTIVADO":"INACTIVO";$("#alert300").classList.toggle("hidden",sold<300);
+}
+
+let statusFilter=null;
+function renderAdmin(){
+ const q=$("#aSearch").value.trim();
+ let list=rows.filter(x=>!q||x.number===q);
+ if(statusFilter)list=list.filter(x=>x.status===statusFilter);
+ $("#adminTickets").innerHTML=list.slice(0,1000).map(t=>`<button type="button" class="ticket ${t.status}" data-n="${t.number}">${t.number}</button>`).join("");
+ $("#adminTickets").querySelectorAll("button").forEach(b=>b.addEventListener("click",()=>ticketDetail(b.dataset.n)));
+ document.querySelectorAll(".stat-filter").forEach(el=>el.classList.remove("active"));
+ if(statusFilter==="paid")$("#filterPaid").classList.add("active");
+ if(statusFilter==="reserved")$("#filterHeld").classList.add("active");
+ if(statusFilter==="available")$("#filterAvail").classList.add("active");
+}
+window.filterAdmin=()=>renderAdmin();
+$("#aSearch").addEventListener("input",()=>renderAdmin());
+
+function setStatusFilter(status,label){
+ statusFilter=(statusFilter===status)?null:status; // clic otra vez = quitar filtro
+ if(statusFilter){$("#statusFilterLabel").textContent=label;$("#statusFilterNote").classList.remove("hidden");}
+ else{$("#statusFilterNote").classList.add("hidden");}
+ renderAdmin();
+}
+$("#filterPaid").addEventListener("click",()=>setStatusFilter("paid","Pagados"));
+$("#filterHeld").addEventListener("click",()=>setStatusFilter("reserved","Apartados"));
+$("#filterAvail").addEventListener("click",()=>setStatusFilter("available","Disponibles"));
+$("#clearStatusFilter").addEventListener("click",e=>{e.preventDefault();statusFilter=null;$("#statusFilterNote").classList.add("hidden");renderAdmin()});
+
+function openTicketModal(title,buyerLine,nums,buttonsHtml){
+ $("#tmTitle").textContent=title;
+ $("#tmBuyer").textContent=buyerLine;
+ $("#tmNums").innerHTML=nums.map(n=>`<span class="selected">${n}</span>`).join("");
+ $("#tmActions").innerHTML=buttonsHtml;
+ $("#ticketModal").classList.remove("hidden");
+}
+function closeTicketModal(){$("#ticketModal").classList.add("hidden")}
+$("#closeTicketModal").addEventListener("click",closeTicketModal);
+
+async function updateTicketsStatus(nums,next){
+ const {error}=await client.from("tickets").update({status:next,reserved_until:next==="reserved"?new Date(Date.now()+86400000).toISOString():null,buyer_id:next==="available"?null:undefined}).eq("raffle_id",window.RAFFLE_ID).in("number",nums);
+ if(error){toast(error.message);return false}
+ toast(nums.length>1?`${nums.length} boletos actualizados`:"Boleto actualizado");
+ return true;
+}
+
+function ticketDetail(n){
+ const t=rows.find(x=>x.number===n);
+ if(!t)return;
+
+ if(t.status==="available"){
+  openTicketModal(`Boleto ${n} — Disponible`,"Sin comprador asociado.",[n],
+   `<button type="button" class="primary" id="tmMarkReserved">📌 Marcar como apartado (bloqueo manual)</button>`);
+  $("#tmMarkReserved").onclick=async()=>{closeTicketModal();if(await updateTicketsStatus([n],"reserved"))await loadAdmin();};
+  return;
+ }
+
+ // reserved o paid: agrupar automáticamente con los demás boletos de la misma persona en el mismo estado
+ const group=t.buyer_id?rows.filter(x=>x.buyer_id===t.buyer_id&&x.status===t.status).map(x=>x.number).sort():[n];
+ const nums=group.length?group:[n];
+ const buyer=t.buyers;
+ const buyerLine=buyer?`${buyer.name} · ${buyer.whatsapp} · ${buyer.city}`:"Sin datos de comprador";
+
+ if(t.status==="reserved"){
+  openTicketModal(nums.length>1?`${nums.length} boletos apartados`:`Boleto ${n} — Apartado`,buyerLine,nums,
+   `<button type="button" class="whatsapp" id="tmMarkPaid">✅ Marcar como PAGADO</button>
+    <button type="button" class="ghost-btn" id="tmMarkAvail">↩️ Marcar como disponible</button>`);
+  $("#tmMarkPaid").onclick=async()=>{
+   closeTicketModal();
+   if(await updateTicketsStatus(nums,"paid")){await loadAdmin();if(buyer)showReceipt(t.buyer_id,buyer,nums);}
+  };
+  $("#tmMarkAvail").onclick=async()=>{
+   closeTicketModal();
+   if(await updateTicketsStatus(nums,"available"))await loadAdmin();
+  };
+  return;
+ }
+
+ if(t.status==="paid"){
+  openTicketModal(nums.length>1?`${nums.length} boletos pagados`:`Boleto ${n} — Pagado`,buyerLine,nums,
+   `<button type="button" class="primary" id="tmResend">📲 Generar comprobante</button>
+    <button type="button" class="ghost-btn" id="tmMarkAvail2">↩️ Marcar como disponible</button>`);
+  $("#tmResend").onclick=()=>{closeTicketModal();if(buyer)showReceipt(t.buyer_id,buyer,nums)};
+  $("#tmMarkAvail2").onclick=async()=>{
+   closeTicketModal();
+   if(await updateTicketsStatus(nums,"available"))await loadAdmin();
+  };
+ }
+}
+
+let receiptBlob=null,receiptPhone="";
+async function showReceipt(buyerId,buyer,nums){
+ const folio="LES-"+buyerId.toString().slice(-8);
+ const now=new Date();
+ const plural=nums.length>1;
+ $("#rFolio").textContent="Folio: "+folio;
+ $("#rName").textContent=buyer.name;
+ $("#rWhats").textContent=buyer.whatsapp;
+ $("#rCity").textContent=buyer.city;
+ $("#rNums").textContent=nums.join(", ");
+ $("#rDate").textContent=now.toLocaleString("es-MX",{dateStyle:"long",timeStyle:"short"});
+ $("#rTotal").textContent=formatMXN(calcTotal(nums.length));
+ $("#receiptModal").classList.remove("hidden");
+ window.__lastReceiptText=`Hola ${buyer.name}, te envío tu comprobante: tu${plural?"s":""} boleto${plural?"s":""} ${nums.join(", ")} fue${plural?"ron":""} seleccionado${plural?"s":""} y marcado${plural?"s":""} como pagado${plural?"s":""} ✅. Folio: ${folio}. Total: ${formatMXN(calcTotal(nums.length))}. ¡Mucha suerte en Lucky Élite Select!`;
+ receiptPhone=(buyer.whatsapp||"").replace(/\D/g,"");
+ generateReceiptImage();
+}
+
+async function generateReceiptImage(){
+ const btn=$("#receiptWhatsapp");
+ receiptBlob=null;btn.disabled=true;btn.textContent="Generando comprobante…";
+ try{
+  const canvas=await html2canvas($("#receiptContent"),{backgroundColor:"#0d0f13",scale:2});
+  receiptBlob=await new Promise(res=>canvas.toBlob(res,"image/png"));
+  btn.textContent="📲 Enviar por WhatsApp";btn.disabled=false;
+ }catch(err){
+  btn.textContent="⚠️ Error al generar, reintentar";btn.disabled=false;
+  btn.onclick=generateReceiptImage;
+  return;
+ }
+ btn.onclick=sendReceiptWhatsapp;
+}
+async function sendReceiptWhatsapp(){
+ if(!receiptBlob){toast("La imagen aún no está lista.");return}
+ // Descarga siempre la imagen primero, para que quede lista en tu carpeta de Descargas y puedas anexarla
+ const dlUrl=URL.createObjectURL(receiptBlob);
+ const dlLink=document.createElement("a");dlLink.href=dlUrl;dlLink.download="comprobante.png";document.body.appendChild(dlLink);dlLink.click();dlLink.remove();
+ const file=new File([receiptBlob],"comprobante.png",{type:"image/png"});
+ // 1) Intento directo: compartir la imagen ya adjunta (funciona en celulares y algunos navegadores de escritorio)
+ if(navigator.canShare&&navigator.canShare({files:[file]})){
+  try{
+   await navigator.share({files:[file],title:"Comprobante de pago",text:window.__lastReceiptText||""});
+   return;
+  }catch(err){ if(err.name==="AbortError")return; /* si falla, sigue al respaldo de abajo */ }
+ }
+ // 2) Respaldo (navegadores de escritorio sin soporte para compartir archivos): abre el chat para adjuntar a mano la imagen ya descargada
+ alert("Se descargó el comprobante (revisa tu carpeta de Descargas).\n\nAl darle Aceptar se abrirá el chat de WhatsApp: usa el clip 📎 y adjunta la imagen que se acaba de descargar.");
+ window.open(`https://wa.me/${receiptPhone?("52"+receiptPhone):""}?text=${encodeURIComponent(window.__lastReceiptText||"")}`,"_blank");
+}
+$("#closeReceipt").addEventListener("click",()=>$("#receiptModal").classList.add("hidden"));
+
+$("#winnerForm").onsubmit=async e=>{e.preventDefault();let n=$("#winnerNumber").value.padStart(3,"0");if(!/^\d{3}$/.test(n))return toast("Escribe un número de 3 dígitos.");const {error}=await client.from("raffles").update({winner_number:n}).eq("id",window.RAFFLE_ID);if(error)toast(error.message);else $("#winnerMsg").textContent=`Ganador publicado: ${n}`};
+$("#logout").onclick=()=>client.auth.signOut();
+boot();
