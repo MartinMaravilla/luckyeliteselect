@@ -107,7 +107,7 @@ function ticketDetail(n){
  }
 }
 
-let receiptBlob=null,receiptPhone="";
+let receiptBlob=null;
 async function showReceipt(buyerId,buyer,nums){
  const folio="LES-"+buyerId.toString().slice(-8);
  const now=new Date();
@@ -120,41 +120,27 @@ async function showReceipt(buyerId,buyer,nums){
  $("#rDate").textContent=now.toLocaleString("es-MX",{dateStyle:"long",timeStyle:"short"});
  $("#rTotal").textContent=formatMXN(calcTotal(nums.length));
  $("#receiptModal").classList.remove("hidden");
- window.__lastReceiptText=`Hola ${buyer.name}, te envío tu comprobante: tu${plural?"s":""} boleto${plural?"s":""} ${nums.join(", ")} fue${plural?"ron":""} seleccionado${plural?"s":""} y marcado${plural?"s":""} como pagado${plural?"s":""} ✅. Folio: ${folio}. Total: ${formatMXN(calcTotal(nums.length))}. ¡Mucha suerte en Lucky Élite Select!`;
- receiptPhone=(buyer.whatsapp||"").replace(/\D/g,"");
  generateReceiptImage();
 }
 
 async function generateReceiptImage(){
- const btn=$("#receiptWhatsapp");
+ const btn=$("#downloadReceiptBtn");
  receiptBlob=null;btn.disabled=true;btn.textContent="Generando comprobante…";
  try{
   const canvas=await html2canvas($("#receiptContent"),{backgroundColor:"#0d0f13",scale:2});
   receiptBlob=await new Promise(res=>canvas.toBlob(res,"image/png"));
-  btn.textContent="📲 Enviar por WhatsApp";btn.disabled=false;
+  btn.textContent="⬇️ Descargar comprobante";btn.disabled=false;
  }catch(err){
   btn.textContent="⚠️ Error al generar, reintentar";btn.disabled=false;
   btn.onclick=generateReceiptImage;
   return;
  }
- btn.onclick=sendReceiptWhatsapp;
+ btn.onclick=downloadReceipt;
 }
-async function sendReceiptWhatsapp(){
+function downloadReceipt(){
  if(!receiptBlob){toast("La imagen aún no está lista.");return}
- // Descarga siempre la imagen primero, para que quede lista en tu carpeta de Descargas y puedas anexarla
- const dlUrl=URL.createObjectURL(receiptBlob);
- const dlLink=document.createElement("a");dlLink.href=dlUrl;dlLink.download="comprobante.png";document.body.appendChild(dlLink);dlLink.click();dlLink.remove();
- const file=new File([receiptBlob],"comprobante.png",{type:"image/png"});
- // 1) Intento directo: compartir la imagen ya adjunta (funciona en celulares y algunos navegadores de escritorio)
- if(navigator.canShare&&navigator.canShare({files:[file]})){
-  try{
-   await navigator.share({files:[file],title:"Comprobante de pago",text:window.__lastReceiptText||""});
-   return;
-  }catch(err){ if(err.name==="AbortError")return; /* si falla, sigue al respaldo de abajo */ }
- }
- // 2) Respaldo (navegadores de escritorio sin soporte para compartir archivos): abre el chat para adjuntar a mano la imagen ya descargada
- alert("Se descargó el comprobante (revisa tu carpeta de Descargas).\n\nAl darle Aceptar se abrirá el chat de WhatsApp: usa el clip 📎 y adjunta la imagen que se acaba de descargar.");
- window.open(`https://wa.me/${receiptPhone?("52"+receiptPhone):""}?text=${encodeURIComponent(window.__lastReceiptText||"")}`,"_blank");
+ const url=URL.createObjectURL(receiptBlob);
+ const a=document.createElement("a");a.href=url;a.download="comprobante.png";document.body.appendChild(a);a.click();a.remove();
 }
 $("#closeReceipt").addEventListener("click",()=>$("#receiptModal").classList.add("hidden"));
 
